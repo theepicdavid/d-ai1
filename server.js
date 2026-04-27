@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
 
-// 🔥 SYSTEM PROMPT (clean + strict + updated website)
+// system prompt
 const systemPrompt = `
 You are D-AI (David-AI), a helpful assistant.
 
