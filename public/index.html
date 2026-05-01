@@ -37,7 +37,11 @@
       gap:12px;
     }
 
-    .brand{font-weight:800;font-size:16px}
+    .brand{
+      font-weight:800;
+      letter-spacing:1px;
+      font-size:16px;
+    }
 
     .status{
       font-size:12px;
@@ -48,12 +52,17 @@
     }
 
     .dot{
-      width:8px;height:8px;border-radius:50%;
+      width:8px;
+      height:8px;
+      border-radius:50%;
       background:#22c55e;
       box-shadow:0 0 10px #22c55e;
     }
 
-    .btnRow{display:flex;gap:8px}
+    .btnRow{
+      display:flex;
+      gap:8px;
+    }
 
     .btn{
       flex:1;
@@ -65,10 +74,21 @@
       font-size:12px;
     }
 
-    .new{background:var(--accent);color:white}
-    .shuffle{background:rgba(255,255,255,0.08);color:var(--text)}
+    .new{
+      background:var(--accent);
+      color:white;
+    }
 
-    .hint{font-size:11px;color:var(--muted)}
+    .shuffle{
+      background:rgba(255,255,255,0.08);
+      color:var(--text);
+    }
+
+    .hint{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:-6px;
+    }
 
     .card{
       padding:10px;
@@ -77,6 +97,7 @@
       border:1px solid var(--border);
       font-size:12px;
       color:var(--muted);
+      line-height:1.4;
     }
 
     .suggestions div{
@@ -95,7 +116,7 @@
       flex:1;
       display:flex;
       flex-direction:column;
-      height:100vh;
+      position:relative;
     }
 
     header{
@@ -103,24 +124,34 @@
       border-bottom:1px solid var(--border);
       background:rgba(15,23,42,0.5);
       backdrop-filter: blur(10px);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .title{
+      font-weight:700;
+    }
+
+    .sub{
+      font-size:12px;
+      color:var(--muted);
     }
 
     /* CHAT */
     #chat{
       flex:1;
       padding:24px;
-      padding-bottom:120px; /* 👈 prevents overlap */
       overflow-y:auto;
       display:flex;
       flex-direction:column;
       gap:12px;
-      scroll-behavior:smooth;
-
-      scrollbar-width:none;
     }
 
-    #chat::-webkit-scrollbar{
-      width:0px;
+    .empty{
+      margin:auto;
+      text-align:center;
+      color:var(--muted);
     }
 
     .msg{
@@ -130,45 +161,45 @@
       font-size:14px;
       line-height:1.6;
       border:1px solid var(--border);
-      animation:fadeIn 0.2s ease;
+      animation:pop .12s ease-out;
     }
 
-    @keyframes fadeIn{
-      from{opacity:0;transform:translateY(6px)}
-      to{opacity:1;transform:translateY(0)}
+    @keyframes pop{
+      from{transform:scale(0.98);opacity:0}
+      to{transform:scale(1);opacity:1}
     }
 
     .user{
       align-self:flex-end;
       background:linear-gradient(135deg,#2563eb,#1d4ed8);
+      border-bottom-right-radius:6px;
     }
 
     .ai{
       align-self:flex-start;
       background:rgba(17,24,39,0.85);
+      border-bottom-left-radius:6px;
     }
 
     /* INPUT */
     .inputWrap{
-      position:fixed;
-      bottom:0;
-      left:270px;
-      right:0;
-      padding:16px;
-      background:rgba(15,23,42,0.8);
-      backdrop-filter: blur(10px);
-      border-top:1px solid var(--border);
+      position:absolute;
+      bottom:16px;
+      left:50%;
+      transform:translateX(-50%);
+      width:100%;
+      max-width:800px;
+      padding:0 16px;
     }
 
     .box{
-      max-width:800px;
-      margin:0 auto;
       display:flex;
       gap:10px;
       padding:10px;
       border-radius:14px;
       background:rgba(17,24,39,0.9);
       border:1px solid var(--border);
+      backdrop-filter: blur(12px);
     }
 
     input{
@@ -178,6 +209,7 @@
       outline:none;
       color:var(--text);
       padding:10px;
+      font-size:14px;
     }
 
     button{
@@ -187,9 +219,14 @@
       padding:10px 14px;
       border-radius:10px;
       cursor:pointer;
+      font-weight:600;
     }
 
     .typing{opacity:0.6;font-style:italic}
+
+    .ai h1{font-size:18px;margin:6px 0}
+    .ai ul{margin:6px 0 6px 18px}
+    .ai b{color:white}
   </style>
 </head>
 
@@ -209,10 +246,13 @@
     <button class="btn shuffle" onclick="randomize()">Shuffle ideas ↻</button>
   </div>
 
-  <div class="hint">Shuffle gives you new prompt ideas</div>
+  <div class="hint">
+    Shuffle gives you new prompt ideas
+  </div>
 
   <div class="card">
-    Ask for explanations, code, ideas, or summaries.
+    Ask for explanations, code, ideas, or summaries.  
+    Supports **bold**, # titles, and * lists.
   </div>
 
   <div class="suggestions" id="suggestions"></div>
@@ -221,23 +261,38 @@
 
 <div class="main">
 
-  <header>D-AI Chat</header>
+  <header>
+    <div class="title">D-AI Chat</div>
+    <div class="sub">Your everyday AI assistant for thinking, writing, and building</div>
+  </header>
 
-  <div id="chat"></div>
-
-</div>
-
-<div class="inputWrap">
-  <div class="box">
-    <input id="msg" placeholder="Message..." />
-    <button onclick="send()">Send</button>
+  <div id="chat">
+    <div class="empty" id="empty">
+      Start chatting with your AI assistant
+    </div>
   </div>
+
+  <div class="inputWrap">
+    <div class="box">
+      <input id="msg" placeholder="Message D-AI..." />
+      <button onclick="send()">Send</button>
+    </div>
+  </div>
+
 </div>
 
 <script>
 const chat = document.getElementById("chat");
 const input = document.getElementById("msg");
+const empty = document.getElementById("empty");
 const suggestionsBox = document.getElementById("suggestions");
+
+/* ✅ FIX 1: SESSION ID ADDED */
+const sessionId =
+  localStorage.getItem("sessionId") ||
+  crypto.randomUUID();
+
+localStorage.setItem("sessionId", sessionId);
 
 const prompts = [
   "Explain quantum physics simply",
@@ -252,7 +307,11 @@ const prompts = [
 
 function randomize(){
   suggestionsBox.innerHTML = "";
-  const pick = [...prompts].sort(()=>Math.random()-0.5).slice(0,4);
+
+  const pick = [...prompts]
+    .sort(()=>Math.random()-0.5)
+    .slice(0,4);
+
   pick.forEach(p=>{
     const d=document.createElement("div");
     d.textContent=p;
@@ -260,58 +319,69 @@ function randomize(){
     suggestionsBox.appendChild(d);
   });
 }
+
 randomize();
 
 function newChat(){
-  chat.innerHTML="";
+  chat.innerHTML = `<div class="empty">Start chatting with your AI assistant</div>`;
 }
 
+function removeEmpty(){
+  const e=document.querySelector(".empty");
+  if(e) e.remove();
+}
+
+/* ✅ FIX 2: PROPER AUTO SCROLL */
 function scrollToBottom(){
-  requestAnimationFrame(()=>{
+  setTimeout(()=>{
     chat.scrollTop = chat.scrollHeight;
-  });
+  },0);
 }
 
-function add(text, cls){
-  const div = document.createElement("div");
-  div.className = "msg " + cls;
-  div.textContent = text;
+function add(text,cls){
+  removeEmpty();
+
+  const div=document.createElement("div");
+  div.className="msg "+cls;
+  div.textContent=text;
+
   chat.appendChild(div);
   scrollToBottom();
+
   return div;
 }
 
 async function send(){
-  const message = input.value.trim();
+  const message=input.value.trim();
   if(!message) return;
 
   input.value="";
 
   add(message,"user");
 
-  const ai = add("Thinking...","ai typing");
+  const ai=add("Thinking...","ai typing");
 
   try{
-    const res = await fetch("/chat",{
+    const res=await fetch("/chat",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({message})
+      body:JSON.stringify({message, sessionId}) /* FIXED */
     });
 
-    const data = await res.json();
+    const data=await res.json();
 
     ai.classList.remove("typing");
-    ai.textContent = data.reply;
+    ai.textContent=data.reply;
 
-    setTimeout(scrollToBottom, 0);
+    scrollToBottom();
 
-  }catch{
-    ai.textContent="Error.";
+  }catch(e){
+    ai.textContent="Error contacting AI.";
   }
 }
 
-input.addEventListener("keydown", e=>{
-  if(e.key==="Enter") send();
+input.addEventListener("keydown",(e)=>{
+  if(e.key==="Enter")send();
 });
 </script>
 
