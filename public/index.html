@@ -37,11 +37,7 @@
       gap:12px;
     }
 
-    .brand{
-      font-weight:800;
-      letter-spacing:1px;
-      font-size:16px;
-    }
+    .brand{font-weight:800;font-size:16px}
 
     .status{
       font-size:12px;
@@ -52,17 +48,12 @@
     }
 
     .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
+      width:8px;height:8px;border-radius:50%;
       background:#22c55e;
       box-shadow:0 0 10px #22c55e;
     }
 
-    .btnRow{
-      display:flex;
-      gap:8px;
-    }
+    .btnRow{display:flex;gap:8px}
 
     .btn{
       flex:1;
@@ -74,21 +65,10 @@
       font-size:12px;
     }
 
-    .new{
-      background:var(--accent);
-      color:white;
-    }
+    .new{background:var(--accent);color:white}
+    .shuffle{background:rgba(255,255,255,0.08);color:var(--text)}
 
-    .shuffle{
-      background:rgba(255,255,255,0.08);
-      color:var(--text);
-    }
-
-    .hint{
-      font-size:11px;
-      color:var(--muted);
-      margin-top:-6px;
-    }
+    .hint{font-size:11px;color:var(--muted)}
 
     .card{
       padding:10px;
@@ -97,7 +77,6 @@
       border:1px solid var(--border);
       font-size:12px;
       color:var(--muted);
-      line-height:1.4;
     }
 
     .suggestions div{
@@ -116,7 +95,6 @@
       flex:1;
       display:flex;
       flex-direction:column;
-      position:relative;
     }
 
     header{
@@ -124,18 +102,6 @@
       border-bottom:1px solid var(--border);
       background:rgba(15,23,42,0.5);
       backdrop-filter: blur(10px);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    .title{
-      font-weight:700;
-    }
-
-    .sub{
-      font-size:12px;
-      color:var(--muted);
     }
 
     /* CHAT */
@@ -146,18 +112,14 @@
       display:flex;
       flex-direction:column;
       gap:12px;
+      scroll-behavior:smooth;
+
+      /* 👇 hide ugly scrollbar */
+      scrollbar-width:none; /* Firefox */
     }
 
-    #chat::-webkit-scrollbar{width:6px}
-    #chat::-webkit-scrollbar-thumb{
-      background:rgba(255,255,255,0.1);
-      border-radius:10px;
-    }
-
-    .empty{
-      margin:auto;
-      text-align:center;
-      color:var(--muted);
+    #chat::-webkit-scrollbar{
+      width:0px; /* Chrome/Safari */
     }
 
     .msg{
@@ -167,35 +129,29 @@
       font-size:14px;
       line-height:1.6;
       border:1px solid var(--border);
-      animation:pop .12s ease-out;
+      animation:fadeIn 0.2s ease;
     }
 
-    @keyframes pop{
-      from{transform:scale(0.98);opacity:0}
-      to{transform:scale(1);opacity:1}
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(6px)}
+      to{opacity:1;transform:translateY(0)}
     }
 
     .user{
       align-self:flex-end;
       background:linear-gradient(135deg,#2563eb,#1d4ed8);
-      border-bottom-right-radius:6px;
     }
 
     .ai{
       align-self:flex-start;
       background:rgba(17,24,39,0.85);
-      border-bottom-left-radius:6px;
     }
 
     /* INPUT */
     .inputWrap{
-      position:absolute;
-      bottom:16px;
-      left:50%;
-      transform:translateX(-50%);
-      width:100%;
-      max-width:800px;
-      padding:0 16px;
+      padding:16px;
+      border-top:1px solid var(--border);
+      background:rgba(15,23,42,0.6);
     }
 
     .box{
@@ -205,7 +161,6 @@
       border-radius:14px;
       background:rgba(17,24,39,0.9);
       border:1px solid var(--border);
-      backdrop-filter: blur(12px);
     }
 
     input{
@@ -215,7 +170,6 @@
       outline:none;
       color:var(--text);
       padding:10px;
-      font-size:14px;
     }
 
     button{
@@ -225,15 +179,9 @@
       padding:10px 14px;
       border-radius:10px;
       cursor:pointer;
-      font-weight:600;
     }
 
     .typing{opacity:0.6;font-style:italic}
-
-    .ai h1{font-size:18px;margin:6px 0}
-    .ai ul{margin:6px 0 6px 18px}
-    .ai b{color:white}
-
   </style>
 </head>
 
@@ -253,13 +201,10 @@
     <button class="btn shuffle" onclick="randomize()">Shuffle ideas ↻</button>
   </div>
 
-  <div class="hint">
-    Shuffle gives you new prompt ideas
-  </div>
+  <div class="hint">Shuffle gives you new prompt ideas</div>
 
   <div class="card">
-    Ask for explanations, code, ideas, or summaries.  
-    Supports **bold**, # titles, and * lists.
+    Ask for explanations, code, ideas, or summaries.
   </div>
 
   <div class="suggestions" id="suggestions"></div>
@@ -268,20 +213,13 @@
 
 <div class="main">
 
-  <header>
-    <div class="title">D-AI Chat</div>
-    <div class="sub">Your everyday AI assistant for thinking, writing, and building</div>
-  </header>
+  <header>D-AI Chat</header>
 
-  <div id="chat">
-    <div class="empty" id="empty">
-      Start chatting with your AI assistant
-    </div>
-  </div>
+  <div id="chat"></div>
 
   <div class="inputWrap">
     <div class="box">
-      <input id="msg" placeholder="Message D-AI..." />
+      <input id="msg" placeholder="Message..." />
       <button onclick="send()">Send</button>
     </div>
   </div>
@@ -291,14 +229,7 @@
 <script>
 const chat = document.getElementById("chat");
 const input = document.getElementById("msg");
-const empty = document.getElementById("empty");
 const suggestionsBox = document.getElementById("suggestions");
-
-const sessionId =
-  localStorage.getItem("sessionId") ||
-  crypto.randomUUID();
-
-localStorage.setItem("sessionId", sessionId);
 
 const prompts = [
   "Explain quantum physics simply",
@@ -313,11 +244,7 @@ const prompts = [
 
 function randomize(){
   suggestionsBox.innerHTML = "";
-
-  const pick = [...prompts]
-    .sort(()=>Math.random()-0.5)
-    .slice(0,4);
-
+  const pick = [...prompts].sort(()=>Math.random()-0.5).slice(0,4);
   pick.forEach(p=>{
     const d=document.createElement("div");
     d.textContent=p;
@@ -325,88 +252,61 @@ function randomize(){
     suggestionsBox.appendChild(d);
   });
 }
-
 randomize();
 
 function newChat(){
-  chat.innerHTML = `<div class="empty">Start chatting with your AI assistant</div>`;
+  chat.innerHTML="";
 }
 
-function removeEmpty(){
-  const e=document.querySelector(".empty");
-  if(e) e.remove();
+function scrollToBottom(){
+  setTimeout(()=>{
+    chat.scrollTo({
+      top: chat.scrollHeight,
+      behavior: "smooth"
+    });
+  }, 50);
 }
 
-function add(text,cls){
-  removeEmpty();
-  const div=document.createElement("div");
-  div.className="msg "+cls;
-  div.textContent=text;
+function add(text, cls){
+  const div = document.createElement("div");
+  div.className = "msg " + cls;
+  div.textContent = text;
   chat.appendChild(div);
-  chat.scrollTop=chat.scrollHeight;
+  scrollToBottom();
   return div;
 }
 
-function formatAIText(text){
-  const lines=text.split("\n");
-  let html="";
-  let list=false;
-
-  for(let l of lines){
-
-    if(l.startsWith("# ")){
-      html+=`<h1>${l.slice(2)}</h1>`;
-      continue;
-    }
-
-    if(l.startsWith("* ")){
-      if(!list){html+="<ul>";list=true;}
-      html+=`<li>${l.slice(2)}</li>`;
-      continue;
-    }
-
-    if(list){html+="</ul>";list=false;}
-
-    l=l.replace(/\*\*(.*?)\*\*/g,"<b>$1</b>");
-
-    if(l.trim()) html+=`<div>${l}</div>`;
-  }
-
-  if(list) html+="</ul>";
-
-  return html;
-}
-
 async function send(){
-  const message=input.value.trim();
-  if(!message)return;
+  const message = input.value.trim();
+  if(!message) return;
 
   input.value="";
 
   add(message,"user");
 
-  const ai=add("Thinking...","ai");
-  ai.classList.add("typing");
+  const ai = add("Thinking...","ai typing");
 
   try{
-    const res=await fetch("/chat",{
+    const res = await fetch("/chat",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({message,sessionId})
+      body:JSON.stringify({message})
     });
 
-    const data=await res.json();
+    const data = await res.json();
 
     ai.classList.remove("typing");
-    ai.innerHTML=formatAIText(data.reply);
+    ai.textContent = data.reply;
 
-  }catch(e){
-    ai.textContent="Error contacting AI.";
+    scrollToBottom();
+
+  }catch{
+    ai.textContent="Error.";
   }
 }
 
-input.addEventListener("keydown",(e)=>{
-  if(e.key==="Enter")send();
+input.addEventListener("keydown", e=>{
+  if(e.key==="Enter") send();
 });
 </script>
 
