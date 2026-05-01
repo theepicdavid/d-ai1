@@ -1,6 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const dotenv = require("dotenv");
+const path = require("path");
 
 dotenv.config();
 
@@ -11,11 +12,14 @@ app.use(express.static("public"));
 
 console.log("GROQ KEY:", process.env.GROQ_API_KEY ? "YES" : "NO");
 
+// serve frontend
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/public/index.html");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// system prompt
+// --------------------
+// SYSTEM PROMPT
+// --------------------
 const systemPrompt = `
 You are D-AI (David-AI), a helpful assistant.
 
@@ -27,44 +31,70 @@ IDENTITY RULES:
 DEVELOPER INFORMATION:
 - Your developer is "David Does Tech"
 - Your official website is "https://d-ai.rf.gd"
-- You may only mention developer or website if asked about your creator, origin, or website
-- Do NOT mention developer or website in normal conversation
+- Only mention developer if asked
 
 BEHAVIOR:
 - Be helpful, natural, and conversational
-- Do not mention being an AI or language model unless asked
-- Do not mention internal model names
-
-EXCEPTIONS:
-If asked about your creator or website, respond with:
-- Developer: David Does Tech
-- Creator's Website: https://daviddoestech.rf.gd
+- Do not give short lazy answers
+- Always be clear and useful
 `.trim();
 
+// --------------------
+// MEMORY STORAGE (per user session)
+// --------------------
+const sessions = {};
+
+// --------------------
+// CHAT ROUTE
+// --------------------
 app.post("/chat", async (req, res) => {
   try {
-    const message = req.body.message;
+    const { message, sessionId } = req.body;
 
     if (!message) {
       return res.json({ reply: "No message provided." });
     }
 
+    if (!sessionId) {
+      return res.json({ reply: "Missing sessionId." });
+    }
+
+    // create session if it doesn't exist
+    if (!sessions[sessionId]) {
+      sessions[sessionId] = [
+        {
+          role: "system",
+          content: systemPrompt
+        }
+      ];
+    }
+
+    const history = sessions[sessionId];
+
+    // add user message
+    history.push({
+      role: "user",
+      content: message
+    });
+
+    // keep memory limited (important)
+    const MAX_MESSAGES = 30;
+
+    if (history.length > MAX_MESSAGES) {
+      const system = history[0];
+      const recent = history.slice(-MAX_MESSAGES);
+      sessions[sessionId] = [system, ...recent];
+    }
+
+    // call Groq
     const response = await axios.post(
       "https://api.groq.com/openai/v1/chat/completions",
       {
         model: "llama-3.1-8b-instant",
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt
-          },
-          {
-            role: "user",
-            content: message
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 800
+        messages: sessions[sessionId],
+        temperature: 0.8,
+        max_tokens: 800,
+        top_p: 0.9
       },
       {
         headers: {
@@ -74,9 +104,17 @@ app.post("/chat", async (req, res) => {
       }
     );
 
-    res.json({
-      reply: response.data?.choices?.[0]?.message?.content || "No response."
+    const botReply =
+      response.data?.choices?.[0]?.message?.content ||
+      "No response.";
+
+    // save assistant reply
+    sessions[sessionId].push({
+      role: "assistant",
+      content: botReply
     });
+
+    res.json({ reply: botReply });
 
   } catch (err) {
     console.log("ERROR:", err.response?.data || err.message);
@@ -85,6 +123,7 @@ app.post("/chat", async (req, res) => {
   }
 });
 
+// --------------------
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
