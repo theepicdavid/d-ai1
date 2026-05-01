@@ -95,6 +95,7 @@
       flex:1;
       display:flex;
       flex-direction:column;
+      height:100vh;
     }
 
     header{
@@ -108,18 +109,18 @@
     #chat{
       flex:1;
       padding:24px;
+      padding-bottom:120px; /* 👈 prevents overlap */
       overflow-y:auto;
       display:flex;
       flex-direction:column;
       gap:12px;
       scroll-behavior:smooth;
 
-      /* 👇 hide ugly scrollbar */
-      scrollbar-width:none; /* Firefox */
+      scrollbar-width:none;
     }
 
     #chat::-webkit-scrollbar{
-      width:0px; /* Chrome/Safari */
+      width:0px;
     }
 
     .msg{
@@ -149,12 +150,19 @@
 
     /* INPUT */
     .inputWrap{
+      position:fixed;
+      bottom:0;
+      left:270px;
+      right:0;
       padding:16px;
+      background:rgba(15,23,42,0.8);
+      backdrop-filter: blur(10px);
       border-top:1px solid var(--border);
-      background:rgba(15,23,42,0.6);
     }
 
     .box{
+      max-width:800px;
+      margin:0 auto;
       display:flex;
       gap:10px;
       padding:10px;
@@ -217,13 +225,13 @@
 
   <div id="chat"></div>
 
-  <div class="inputWrap">
-    <div class="box">
-      <input id="msg" placeholder="Message..." />
-      <button onclick="send()">Send</button>
-    </div>
-  </div>
+</div>
 
+<div class="inputWrap">
+  <div class="box">
+    <input id="msg" placeholder="Message..." />
+    <button onclick="send()">Send</button>
+  </div>
 </div>
 
 <script>
@@ -259,12 +267,9 @@ function newChat(){
 }
 
 function scrollToBottom(){
-  setTimeout(()=>{
-    chat.scrollTo({
-      top: chat.scrollHeight,
-      behavior: "smooth"
-    });
-  }, 50);
+  requestAnimationFrame(()=>{
+    chat.scrollTop = chat.scrollHeight;
+  });
 }
 
 function add(text, cls){
@@ -298,7 +303,7 @@ async function send(){
     ai.classList.remove("typing");
     ai.textContent = data.reply;
 
-    scrollToBottom();
+    setTimeout(scrollToBottom, 0);
 
   }catch{
     ai.textContent="Error.";
