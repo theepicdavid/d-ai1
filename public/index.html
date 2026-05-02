@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
   <title>D-AI</title>
 
   <style>
@@ -117,6 +119,7 @@
       display:flex;
       flex-direction:column;
       position:relative;
+      min-width:0;
     }
 
     header{
@@ -227,6 +230,26 @@
     .ai h1{font-size:18px;margin:6px 0}
     .ai ul{margin:6px 0 6px 18px}
     .ai b{color:white}
+
+    /* ✅ MOBILE / WEBVIEW FIX (SAFE, DOES NOT CHANGE LAYOUT) */
+    @media (max-width: 700px) {
+      body {
+        overflow-x: hidden;
+      }
+
+      .msg {
+        max-width: 90%;
+      }
+
+      #chat {
+        padding: 16px;
+      }
+
+      .main {
+        min-width: 0;
+      }
+    }
+
   </style>
 </head>
 
@@ -287,7 +310,6 @@ const input = document.getElementById("msg");
 const empty = document.getElementById("empty");
 const suggestionsBox = document.getElementById("suggestions");
 
-/* ✅ FIX 1: SESSION ID ADDED */
 const sessionId =
   localStorage.getItem("sessionId") ||
   crypto.randomUUID();
@@ -331,7 +353,6 @@ function removeEmpty(){
   if(e) e.remove();
 }
 
-/* ✅ FIX 2: PROPER AUTO SCROLL */
 function scrollToBottom(){
   setTimeout(()=>{
     chat.scrollTop = chat.scrollHeight;
@@ -365,7 +386,7 @@ async function send(){
     const res=await fetch("/chat",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({message, sessionId}) /* FIXED */
+      body:JSON.stringify({message, sessionId})
     });
 
     const data=await res.json();
