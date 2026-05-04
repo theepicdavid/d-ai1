@@ -10,8 +10,10 @@
 <style>
 :root{
   --bg:#0a0c10;
+  --panel:#0f172a;
   --border:rgba(255,255,255,0.08);
   --text:#e5e7eb;
+  --muted:#9ca3af;
   --accent:#4f46e5;
 }
 
@@ -26,23 +28,46 @@ body{
   display:flex;
 }
 
-/* SIDEBAR */
+/* SIDEBAR (YOUR ORIGINAL STYLE RESTORED) */
 .sidebar{
-  width:260px;
+  width:270px;
   background:rgba(17,24,39,0.6);
   border-right:1px solid var(--border);
+  backdrop-filter: blur(12px);
   padding:14px;
   display:flex;
   flex-direction:column;
+  gap:12px;
   transition:0.3s;
 }
 
-.sidebar.open{
-  left:0;
+.brand{
+  font-weight:800;
 }
 
-.sidebar h3{
-  margin:0;
+.status{
+  font-size:12px;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#22c55e;
+  box-shadow:0 0 10px #22c55e;
+}
+
+.card{
+  padding:10px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  font-size:12px;
+  color:var(--muted);
 }
 
 /* MAIN */
@@ -51,6 +76,7 @@ body{
   display:flex;
   flex-direction:column;
   height:100vh;
+  min-width:0;
 }
 
 /* HEADER */
@@ -81,14 +107,14 @@ button{
   flex-direction:column;
   gap:12px;
 
-  /* 🔥 FIX: no overlap with input */
-  padding-bottom:180px;
+  /* FIX: prevents input overlap */
+  padding-bottom:160px;
 }
 
 .msg{
-  max-width:75%;
-  padding:12px;
-  border-radius:12px;
+  max-width:72%; /* 🔥 YOUR ORIGINAL KEPT */
+  padding:12px 14px;
+  border-radius:16px;
   font-size:14px;
   line-height:1.6;
   white-space:pre-wrap;
@@ -104,7 +130,7 @@ button{
   background:rgba(17,24,39,0.85);
 }
 
-/* 🔥 Markdown FIX */
+/* MARKDOWN FIX (IMPORTANT) */
 .ai p{margin:6px 0;}
 .ai ul{margin:6px 0 6px 18px;}
 .ai h1,.ai h2,.ai h3{margin:6px 0;}
@@ -149,11 +175,11 @@ input{
   outline:none;
 }
 
-/* MOBILE */
+/* MOBILE SIDEBAR */
 @media(max-width:700px){
   .sidebar{
     position:fixed;
-    left:-260px;
+    left:-270px;
     top:0;
     height:100%;
     z-index:1000;
@@ -168,10 +194,21 @@ input{
 
 <body>
 
-<!-- SIDEBAR -->
+<!-- SIDEBAR (FULL RESTORED CONTENT) -->
 <div class="sidebar" id="sidebar">
-  <h3>D-AI</h3>
-  <p style="color:gray;font-size:12px;">AI Assistant</p>
+
+  <div class="brand">D-AI</div>
+
+  <div class="status">
+    <span class="dot"></span>
+    Online AI Assistant
+  </div>
+
+  <div class="card">
+    Ask for explanations, code, ideas, or summaries.<br>
+    Supports markdown formatting.
+  </div>
+
 </div>
 
 <!-- MAIN -->
@@ -224,7 +261,7 @@ function add(text, cls, isAI=false){
   return div;
 }
 
-/* SEND */
+/* SEND MESSAGE */
 async function send(){
   const message=input.value.trim();
   if(!message) return;
