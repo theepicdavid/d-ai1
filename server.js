@@ -64,11 +64,11 @@ app.post("/chat", async (req, res) => {
     const { message, sessionId } = req.body;
 
     if (!message) {
-      return res.json({ reply: "No message provided." });
+      return res.json({ reply: "f*ck theres no message" });
     }
 
     if (!sessionId) {
-      return res.json({ reply: "Missing sessionId." });
+      return res.json({ reply: "no sessionid restart ur browser or clear cache." });
     }
 
     // create session if it doesn't exist
@@ -131,7 +131,7 @@ app.post("/chat", async (req, res) => {
   } catch (err) {
     console.log("ERROR:", err.response?.data || err.message);
 
-    res.json({ reply: "AI error occurred." });
+    res.json({ reply: "whoops there's an error. retry or make a new chat, or contact the developer for more info (https://daviddoestech.rf.gd)" });
   }
 });
 
