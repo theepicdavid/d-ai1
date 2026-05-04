@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
 <title>D-AI</title>
 
@@ -10,26 +10,24 @@
 <style>
 :root{
   --bg:#0a0c10;
-  --panel:#0f172a;
   --border:rgba(255,255,255,0.08);
   --text:#e5e7eb;
   --muted:#9ca3af;
   --accent:#4f46e5;
-  --user:#2563eb;
 }
 
 *{box-sizing:border-box}
 
 body{
   margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  font-family:system-ui;
   background:var(--bg);
   color:var(--text);
   height:100vh;
   display:flex;
 }
 
-/* SIDEBAR (RESTORED ORIGINAL STYLE) */
+/* SIDEBAR */
 .sidebar{
   width:270px;
   background:rgba(17,24,39,0.6);
@@ -41,11 +39,7 @@ body{
   gap:12px;
 }
 
-.brand{
-  font-weight:800;
-  font-size:16px;
-  letter-spacing:1px;
-}
+.brand{font-weight:800}
 
 .status{
   font-size:12px;
@@ -71,15 +65,15 @@ body{
 .btn{
   flex:1;
   padding:10px;
-  border-radius:10px;
   border:none;
+  border-radius:10px;
   cursor:pointer;
   font-weight:600;
   font-size:12px;
 }
 
-.new{ background:var(--accent); color:white; }
-.shuffle{ background:rgba(255,255,255,0.08); color:var(--text); }
+.new{background:var(--accent);color:white;}
+.shuffle{background:rgba(255,255,255,0.08);color:var(--text);}
 
 .card{
   padding:10px;
@@ -88,7 +82,6 @@ body{
   border:1px solid var(--border);
   font-size:12px;
   color:var(--muted);
-  line-height:1.4;
 }
 
 .suggestions div{
@@ -97,6 +90,7 @@ body{
   font-size:13px;
   cursor:pointer;
 }
+
 .suggestions div:hover{
   background:rgba(255,255,255,0.06);
 }
@@ -114,7 +108,6 @@ header{
   padding:12px 16px;
   border-bottom:1px solid var(--border);
   background:rgba(15,23,42,0.5);
-  backdrop-filter: blur(10px);
   display:flex;
   align-items:center;
   gap:10px;
@@ -128,19 +121,17 @@ header{
   display:flex;
   flex-direction:column;
   gap:12px;
-
-  /* FIX OVERLAP */
   padding-bottom:160px;
 }
 
 .msg{
-  max-width:72%; /* KEEP YOUR ORIGINAL */
+  max-width:72%;
   padding:12px 14px;
   border-radius:16px;
   font-size:14px;
   line-height:1.6;
-  animation:pop .12s ease-out;
   white-space:pre-wrap;
+  animation:pop .12s ease;
 }
 
 @keyframes pop{
@@ -150,21 +141,18 @@ header{
 
 .user{
   align-self:flex-end;
-  background:linear-gradient(135deg,#2563eb,#1d4ed8);
-  border-bottom-right-radius:6px;
+  background:#2563eb;
 }
 
 .ai{
   align-self:flex-start;
   background:rgba(17,24,39,0.85);
-  border-bottom-left-radius:6px;
 }
 
-/* MARKDOWN FIX (REAL LOOK) */
+/* MARKDOWN FIX */
 .ai p{margin:6px 0;}
 .ai ul{margin:6px 0 6px 18px;}
-.ai h1{font-size:18px;margin:6px 0;}
-.ai h2{font-size:16px;margin:6px 0;}
+.ai h1,.ai h2,.ai h3{margin:6px 0;}
 
 .ai code{
   background:#111;
@@ -198,7 +186,6 @@ header{
   border-radius:14px;
   background:rgba(17,24,39,0.9);
   border:1px solid var(--border);
-  backdrop-filter: blur(12px);
 }
 
 input{
@@ -207,29 +194,18 @@ input{
   border:none;
   outline:none;
   color:var(--text);
-  padding:10px;
   font-size:14px;
 }
 
-button.send{
-  background:var(--accent);
-  border:none;
-  color:white;
-  padding:10px 14px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:600;
-}
-
 /* MOBILE */
-@media (max-width:700px){
+@media(max-width:700px){
   .sidebar{
     position:fixed;
     left:-270px;
     top:0;
     height:100%;
-    z-index:1000;
     transition:0.3s;
+    z-index:1000;
   }
 
   .sidebar.open{
@@ -241,24 +217,23 @@ button.send{
 
 <body>
 
-<!-- SIDEBAR (FULL RESTORED) -->
+<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
 
   <div class="brand">D-AI</div>
 
   <div class="status">
     <span class="dot"></span>
-    Online AI Assistant
+    Online AI
   </div>
 
   <div class="btnRow">
     <button class="btn new" onclick="newChat()">New Chat</button>
-    <button class="btn shuffle" onclick="randomize()">Shuffle ideas ↻</button>
+    <button class="btn shuffle" onclick="randomize()">Shuffle</button>
   </div>
 
   <div class="card">
-    Ask for explanations, code, ideas, or summaries.  
-    Supports **bold**, lists, and code blocks.
+    Ask anything. Supports markdown, code, and formatting.
   </div>
 
   <div class="suggestions" id="suggestions"></div>
@@ -270,18 +245,14 @@ button.send{
 
 <header>
   <button onclick="toggleSidebar()">☰</button>
-  <div>
-    <div style="font-weight:700">D-AI Chat</div>
-    <div style="font-size:12px;color:gray;">Your everyday AI assistant</div>
-  </div>
+  <b>D-AI Chat</b>
 </header>
 
 <div id="chat"></div>
 
 <div class="inputWrap">
   <div class="box">
-    <input id="msg" placeholder="Say anything..." />
-    <button class="send" onclick="send()">Send</button>
+    <input id="msg" placeholder="Message D-AI..." />
   </div>
 </div>
 
@@ -295,18 +266,17 @@ const suggestionsBox=document.getElementById("suggestions");
 const sessionId=localStorage.getItem("sessionId")||crypto.randomUUID();
 localStorage.setItem("sessionId",sessionId);
 
-/* SIDEBAR TOGGLE */
+/* SIDEBAR */
 function toggleSidebar(){
   document.getElementById("sidebar").classList.toggle("open");
 }
 
 /* SUGGESTIONS */
 const prompts=[
-  "Explain quantum physics simply",
-  "Give me startup ideas",
-  "Write a Python function",
-  "Teach JavaScript basics",
-  "Explain black holes"
+  "Explain AI simply",
+  "Write Python code",
+  "Startup ideas",
+  "Teach JS basics"
 ];
 
 function randomize(){
@@ -321,7 +291,7 @@ function randomize(){
 
 randomize();
 
-/* MESSAGES */
+/* CHAT */
 function add(text,cls,isAI=false){
   const div=document.createElement("div");
   div.className="msg "+cls;
@@ -359,9 +329,53 @@ async function send(){
     ai.innerHTML=marked.parse(data.reply,{breaks:true});
 
   }catch(e){
-    ai.textContent="error contacting AI 💀";
+    ai.textContent="error 💀";
   }
 }
+
+/* 🔥 KEYBINDS RESTORED */
+
+input.addEventListener("keydown",(e)=>{
+  if(e.key==="Enter" && !e.shiftKey){
+    e.preventDefault();
+    send();
+  }
+});
+
+/* Ctrl / Cmd shortcuts */
+document.addEventListener("keydown",(e)=>{
+
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="k"){
+    e.preventDefault();
+    input.focus();
+  }
+
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="n"){
+    e.preventDefault();
+    newChat();
+  }
+
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="r"){
+    e.preventDefault();
+    randomize();
+  }
+
+  if(e.key==="Escape"){
+    toggleSidebar();
+  }
+});
+
+/* NEW CHAT */
+function newChat(){
+  chat.innerHTML="";
+}
+
+/* ENTER SEND */
+input.addEventListener("keydown",(e)=>{
+  if(e.key==="Enter" && !e.shiftKey){
+    send();
+  }
+});
 </script>
 
 </body>
