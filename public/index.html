@@ -1,314 +1,182 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>D-AI</title>
+<title>D-AI</title>
 
-  <style>
-    :root{
-      --bg:#0a0c10;
-      --panel:#0f172a;
-      --border:rgba(255,255,255,0.08);
-      --text:#e5e7eb;
-      --muted:#9ca3af;
-      --accent:#4f46e5;
-      --user:#2563eb;
-    }
+<!-- ✅ Markdown parser -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    *{box-sizing:border-box}
+<style>
+:root{
+  --bg:#0a0c10;
+  --panel:#0f172a;
+  --border:rgba(255,255,255,0.08);
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --accent:#4f46e5;
+  --user:#2563eb;
+}
 
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      height:100vh;
-      display:flex;
-    }
+*{box-sizing:border-box}
 
-    /* SIDEBAR */
-    .sidebar{
-      width:270px;
-      background:rgba(17,24,39,0.6);
-      border-right:1px solid var(--border);
-      backdrop-filter: blur(12px);
-      padding:14px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
+body{
+  margin:0;
+  font-family:system-ui;
+  background:var(--bg);
+  color:var(--text);
+  height:100vh;
+  display:flex;
+}
 
-    .brand{
-      font-weight:800;
-      letter-spacing:1px;
-      font-size:16px;
-    }
+/* SIDEBAR */
+.sidebar{
+  width:270px;
+  background:rgba(17,24,39,0.6);
+  border-right:1px solid var(--border);
+  backdrop-filter: blur(12px);
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
 
-    .status{
-      font-size:12px;
-      color:var(--muted);
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
+/* MAIN */
+.main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  height:100vh;
+}
 
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:#22c55e;
-      box-shadow:0 0 10px #22c55e;
-    }
+header{
+  padding:12px 16px;
+  border-bottom:1px solid var(--border);
+  background:rgba(15,23,42,0.5);
+}
 
-    .btnRow{
-      display:flex;
-      gap:8px;
-    }
+/* CHAT */
+#chat{
+  flex:1;
+  padding:20px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding-bottom:120px; /* ✅ prevents input overlap */
+}
 
-    .btn{
-      flex:1;
-      padding:10px;
-      border-radius:10px;
-      border:none;
-      cursor:pointer;
-      font-weight:600;
-      font-size:12px;
-    }
+.msg{
+  max-width:75%;
+  padding:12px;
+  border-radius:14px;
+  font-size:14px;
+  line-height:1.6;
+}
 
-    .new{
-      background:var(--accent);
-      color:white;
-    }
+.user{
+  align-self:flex-end;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+}
 
-    .shuffle{
-      background:rgba(255,255,255,0.08);
-      color:var(--text);
-    }
+.ai{
+  align-self:flex-start;
+  background:rgba(17,24,39,0.85);
+}
 
-    .hint{
-      font-size:11px;
-      color:var(--muted);
-      margin-top:-6px;
-    }
+/* ✅ MARKDOWN STYLING */
+.ai h1{font-size:18px;margin:6px 0}
+.ai h2{font-size:16px;margin:6px 0}
+.ai p{margin:6px 0}
+.ai ul{margin:6px 0 6px 18px}
+.ai code{
+  background:#111;
+  padding:3px 6px;
+  border-radius:6px;
+  color:#00ffcc;
+}
+.ai pre{
+  background:#0d1117;
+  padding:10px;
+  border-radius:10px;
+  overflow-x:auto;
+}
 
-    .card{
-      padding:10px;
-      border-radius:10px;
-      background:rgba(255,255,255,0.04);
-      border:1px solid var(--border);
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.4;
-    }
+/* INPUT */
+.inputWrap{
+  position:fixed; /* ✅ FIXED for mobile */
+  bottom:0;
+  left:0;
+  width:100%;
+  padding:10px;
+  background:rgba(10,12,16,0.9);
+}
 
-    .suggestions div{
-      padding:9px;
-      border-radius:8px;
-      font-size:13px;
-      cursor:pointer;
-    }
+.box{
+  display:flex;
+  gap:10px;
+  max-width:800px;
+  margin:auto;
+}
 
-    .suggestions div:hover{
-      background:rgba(255,255,255,0.06);
-    }
+input{
+  flex:1;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  outline:none;
+}
 
-    /* MAIN */
-    .main{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      position:relative;
-      min-width:0;
-    }
+button{
+  background:var(--accent);
+  border:none;
+  color:white;
+  padding:12px;
+  border-radius:10px;
+  cursor:pointer;
+}
 
-    header{
-      padding:12px 16px;
-      border-bottom:1px solid var(--border);
-      background:rgba(15,23,42,0.5);
-      backdrop-filter: blur(10px);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
+/* MOBILE */
+@media (max-width:700px){
+  .sidebar{
+    display:none; /* ✅ cleaner mobile */
+  }
 
-    .title{
-      font-weight:700;
-    }
-
-    .sub{
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    /* CHAT */
-    #chat{
-      flex:1;
-      padding:24px;
-      overflow-y:auto;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-
-    .empty{
-      margin:auto;
-      text-align:center;
-      color:var(--muted);
-    }
-
-    .msg{
-      max-width:72%;
-      padding:12px 14px;
-      border-radius:16px;
-      font-size:14px;
-      line-height:1.6;
-      border:1px solid var(--border);
-      animation:pop .12s ease-out;
-    }
-
-    @keyframes pop{
-      from{transform:scale(0.98);opacity:0}
-      to{transform:scale(1);opacity:1}
-    }
-
-    .user{
-      align-self:flex-end;
-      background:linear-gradient(135deg,#2563eb,#1d4ed8);
-      border-bottom-right-radius:6px;
-    }
-
-    .ai{
-      align-self:flex-start;
-      background:rgba(17,24,39,0.85);
-      border-bottom-left-radius:6px;
-    }
-
-    /* INPUT */
-    .inputWrap{
-      position:absolute;
-      bottom:16px;
-      left:50%;
-      transform:translateX(-50%);
-      width:100%;
-      max-width:800px;
-      padding:0 16px;
-    }
-
-    .box{
-      display:flex;
-      gap:10px;
-      padding:10px;
-      border-radius:14px;
-      background:rgba(17,24,39,0.9);
-      border:1px solid var(--border);
-      backdrop-filter: blur(12px);
-    }
-
-    input{
-      flex:1;
-      background:transparent;
-      border:none;
-      outline:none;
-      color:var(--text);
-      padding:10px;
-      font-size:14px;
-    }
-
-    button{
-      background:var(--accent);
-      border:none;
-      color:white;
-      padding:10px 14px;
-      border-radius:10px;
-      cursor:pointer;
-      font-weight:600;
-    }
-
-    .typing{opacity:0.6;font-style:italic}
-
-    .ai h1{font-size:18px;margin:6px 0}
-    .ai ul{margin:6px 0 6px 18px}
-    .ai b{color:white}
-
-    /* ✅ MOBILE / WEBVIEW FIX (SAFE, DOES NOT CHANGE LAYOUT) */
-    @media (max-width: 700px) {
-      body {
-        overflow-x: hidden;
-      }
-
-      .msg {
-        max-width: 90%;
-      }
-
-      #chat {
-        padding: 16px;
-      }
-
-      .main {
-        min-width: 0;
-      }
-    }
-
-  </style>
+  .msg{
+    max-width:90%;
+  }
+}
+</style>
 </head>
 
 <body>
 
 <div class="sidebar">
-
-  <div class="brand">D-AI</div>
-
-  <div class="status">
-    <span class="dot"></span>
-    Online AI Assistant
-  </div>
-
-  <div class="btnRow">
-    <button class="btn new" onclick="newChat()">New Chat</button>
-    <button class="btn shuffle" onclick="randomize()">Shuffle ideas ↻</button>
-  </div>
-
-  <div class="hint">
-    Shuffle gives you new prompt ideas
-  </div>
-
-  <div class="card">
-    Ask for explanations, code, ideas, or summaries.  
-    Supports **bold**, # titles, and * lists.
-  </div>
-
-  <div class="suggestions" id="suggestions"></div>
-
+  <b>D-AI</b>
 </div>
 
 <div class="main">
 
-  <header>
-    <div class="title">D-AI Chat</div>
-    <div class="sub">Your everyday AI assistant for thinking, writing, and building</div>
-  </header>
+<header>D-AI Chat</header>
 
-  <div id="chat">
-    <div class="empty" id="empty">
-      Start chatting with your AI assistant
-    </div>
-  </div>
+<div id="chat">
+  <div class="empty">Start chatting</div>
+</div>
 
-  <div class="inputWrap">
-    <div class="box">
-      <input id="msg" placeholder="Message D-AI..." />
-      <button onclick="send()">Send</button>
-    </div>
+<div class="inputWrap">
+  <div class="box">
+    <input id="msg" placeholder="Message D-AI..." />
+    <button onclick="send()">Send</button>
   </div>
+</div>
 
 </div>
 
 <script>
 const chat = document.getElementById("chat");
 const input = document.getElementById("msg");
-const empty = document.getElementById("empty");
-const suggestionsBox = document.getElementById("suggestions");
 
 const sessionId =
   localStorage.getItem("sessionId") ||
@@ -316,59 +184,25 @@ const sessionId =
 
 localStorage.setItem("sessionId", sessionId);
 
-const prompts = [
-  "Explain quantum physics simply",
-  "Write a Python sorting function",
-  "Give me startup ideas",
-  "Summarize AI in 2026",
-  "Teach me JavaScript basics",
-  "Explain black holes",
-  "How does the internet work?",
-  "Give me app ideas"
-];
-
-function randomize(){
-  suggestionsBox.innerHTML = "";
-
-  const pick = [...prompts]
-    .sort(()=>Math.random()-0.5)
-    .slice(0,4);
-
-  pick.forEach(p=>{
-    const d=document.createElement("div");
-    d.textContent=p;
-    d.onclick=()=>input.value=p;
-    suggestionsBox.appendChild(d);
-  });
-}
-
-randomize();
-
-function newChat(){
-  chat.innerHTML = `<div class="empty">Start chatting with your AI assistant</div>`;
-}
-
-function removeEmpty(){
-  const e=document.querySelector(".empty");
-  if(e) e.remove();
-}
-
-function scrollToBottom(){
+function scrollBottom(){
   setTimeout(()=>{
     chat.scrollTop = chat.scrollHeight;
   },0);
 }
 
-function add(text,cls){
-  removeEmpty();
-
+function add(text, cls, isAI=false){
   const div=document.createElement("div");
   div.className="msg "+cls;
-  div.textContent=text;
+
+  // ✅ render markdown ONLY for AI
+  if(isAI){
+    div.innerHTML = marked.parse(text);
+  } else {
+    div.textContent = text;
+  }
 
   chat.appendChild(div);
-  scrollToBottom();
-
+  scrollBottom();
   return div;
 }
 
@@ -380,7 +214,7 @@ async function send(){
 
   add(message,"user");
 
-  const ai=add("Thinking...","ai typing");
+  const ai=add("Thinking...","ai",true);
 
   try{
     const res=await fetch("/chat",{
@@ -391,14 +225,13 @@ async function send(){
 
     const data=await res.json();
 
-    ai.classList.remove("typing");
-    ai.textContent=data.reply;
-
-    scrollToBottom();
+    ai.innerHTML = marked.parse(data.reply);
 
   }catch(e){
-    ai.textContent="Error contacting AI.";
+    ai.textContent="something broke 💀 try again";
   }
+
+  scrollBottom();
 }
 
 input.addEventListener("keydown",(e)=>{
