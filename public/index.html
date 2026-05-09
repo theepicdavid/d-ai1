@@ -17,7 +17,7 @@
 }
 
 *{
-  box-sizing:border-box
+  box-sizing:border-box;
 }
 
 body{
@@ -27,6 +27,7 @@ body{
   color:var(--text);
   height:100vh;
   display:flex;
+  overflow:hidden;
 }
 
 /* SIDEBAR */
@@ -39,10 +40,11 @@ body{
   display:flex;
   flex-direction:column;
   gap:12px;
+  flex-shrink:0;
 }
 
 .brand{
-  font-weight:800
+  font-weight:800;
 }
 
 .status{
@@ -100,6 +102,7 @@ body{
   border-radius:8px;
   font-size:13px;
   cursor:pointer;
+  transition:0.2s;
 }
 
 .suggestions div:hover{
@@ -112,6 +115,7 @@ body{
   display:flex;
   flex-direction:column;
   min-width:0;
+  position:relative;
 }
 
 /* HEADER */
@@ -122,6 +126,7 @@ header{
   display:flex;
   align-items:center;
   gap:10px;
+  min-height:64px;
 }
 
 /* MENU BUTTON */
@@ -168,16 +173,17 @@ header{
   line-height:1.6;
   white-space:pre-wrap;
   animation:pop .12s ease;
+  word-wrap:break-word;
 }
 
 @keyframes pop{
   from{
     transform:scale(0.98);
-    opacity:0
+    opacity:0;
   }
   to{
     transform:scale(1);
-    opacity:1
+    opacity:1;
   }
 }
 
@@ -283,6 +289,15 @@ input{
     opacity:1;
     pointer-events:auto;
   }
+
+  .msg{
+    max-width:90%;
+  }
+
+  #chat{
+    padding:16px;
+    padding-bottom:160px;
+  }
 }
 </style>
 </head>
@@ -337,7 +352,7 @@ const chat=document.getElementById("chat");
 const input=document.getElementById("msg");
 const suggestionsBox=document.getElementById("suggestions");
 
-const sessionId=localStorage.getItem("sessionId")||crypto.randomUUID();
+const sessionId=localStorage.getItem("sessionId") || crypto.randomUUID();
 
 localStorage.setItem("sessionId",sessionId);
 
@@ -385,6 +400,8 @@ function randomize(){
         if(window.innerWidth<=700){
           closeSidebar();
         }
+
+        input.focus();
       };
 
       suggestionsBox.appendChild(d);
@@ -479,6 +496,22 @@ document.addEventListener("keydown",(e)=>{
   }
 
   if(e.key==="Escape"){
+    closeSidebar();
+  }
+});
+
+/* CLICK OUTSIDE CLOSE */
+document.addEventListener("click",(e)=>{
+
+  const sidebar=document.getElementById("sidebar");
+  const menuBtn=document.querySelector(".menuBtn");
+
+  if(
+    window.innerWidth<=700 &&
+    sidebar.classList.contains("open") &&
+    !sidebar.contains(e.target) &&
+    !menuBtn.contains(e.target)
+  ){
     closeSidebar();
   }
 });
